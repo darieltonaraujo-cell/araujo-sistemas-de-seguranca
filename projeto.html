@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Detalhes de projeto da Araújo Sistemas de Segurança.">
+<title>Projeto | Araújo Sistemas de Segurança</title>
+<link rel="stylesheet" href="style.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+.detail{width:min(1120px,92%);margin:auto;padding:45px 0 70px}.back{display:inline-block;margin-bottom:25px;color:#078cff;font-weight:700}.hero{display:grid;grid-template-columns:1.2fr .8fr;gap:32px;align-items:start}.cover{width:100%;height:480px;object-fit:cover;border-radius:20px;background:#edf3f8}.info h1{font-size:clamp(2rem,4vw,3.5rem);margin:8px 0 15px;color:#17324f}.muted{color:#60758a}.tag{display:inline-block;background:#eaf6ff;color:#0677c9;padding:6px 11px;border-radius:20px;font-weight:700;font-size:.85rem}.meta{display:grid;gap:10px;margin:22px 0}.meta div{padding:13px 15px;border:1px solid #d9e3ed;border-radius:10px;background:#fff}.gallery{margin-top:40px}.gallery h2{color:#17324f}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:15px}.grid img{width:100%;height:220px;object-fit:cover;border-radius:14px;cursor:pointer}.cta{display:inline-block;margin-top:15px;text-decoration:none}.empty{text-align:center;padding:50px;color:#60758a}@media(max-width:800px){.hero{grid-template-columns:1fr}.cover{height:350px}.grid{grid-template-columns:1fr 1fr}}@media(max-width:520px){.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header><div class="nav"><a href="index.html"><img src="logo.png" alt="Araújo Sistemas de Segurança"></a><nav><a href="index.html">Início</a><a href="index.html#servicos">Serviços</a><a href="projetos.html">Projetos</a><a href="index.html#contato">Contato</a><a class="cta" href="https://wa.me/5511977066221?text=Olá!%20Gostaria%20de%20solicitar%20um%20orçamento." target="_blank">Orçamento</a></nav></div></header>
+<main class="detail"><a class="back" href="projetos.html">← Voltar para Projetos</a><div id="content"><div class="empty">Carregando projeto...</div></div></main>
+<footer><img src="logo.png" alt="Logo"> © 2026 Araújo Sistemas de Segurança • São Paulo/SP</footer>
+<script>
+const client=supabase.createClient('https://sjmalhhugkixboenycex.supabase.co','sb_publishable_oXjtaNLw5daX7aaPR4H-4A_D-9R8Rtg');
+const id=new URLSearchParams(location.search).get('id');
+const esc=s=>String(s??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
+const url=p=>client.storage.from('projetos').getPublicUrl(p).data.publicUrl;
+(async()=>{if(!id){document.title='Projeto não encontrado';document.querySelector('#content').innerHTML='<div class="empty">Projeto não encontrado.</div>';return}const {data:p,error}=await client.from('projects').select('*,project_photos(*)').eq('id',id).eq('published',true).single();if(error||!p){document.querySelector('#content').innerHTML='<div class="empty">Projeto não encontrado ou não publicado.</div>';return}const photos=(p.project_photos||[]).sort((a,b)=>a.sort_order-b.sort_order);if(p.image_path&&!photos.some(x=>x.image_path===p.image_path))photos.unshift({image_path:p.image_path});const cover=photos[0]?.image_path;document.title=esc(p.title)+' | Araújo Sistemas de Segurança';document.querySelector('#content').innerHTML=`<section class="hero"><div><img class="cover" src="${url(cover)}" alt="${esc(p.title)}"></div><div class="info"><span class="tag">${esc(p.category||'Segurança eletrônica')}</span><h1>${esc(p.title)}</h1>${p.location?`<p class="muted">📍 ${esc(p.location)}</p>`:''}${p.service_date?`<p class="muted">📅 ${new Date(p.service_date+'T12:00:00').toLocaleDateString('pt-BR')}</p>`:''}<div class="meta"><div><strong>Descrição</strong><br><span class="muted">${esc(p.description)}</span></div>${p.technical_details?`<div><strong>Detalhes técnicos</strong><br><span class="muted">${esc(p.technical_details)}</span></div>`:''}</div><a class="button cta" href="https://wa.me/5511977066221?text=${encodeURIComponent('Olá! Vi o projeto '+p.title+' no site e gostaria de solicitar um orçamento.') }" target="_blank">Solicitar orçamento pelo WhatsApp</a></div></section><section class="gallery"><h2>Galeria do projeto</h2><div class="grid">${photos.map(x=>`<img src="${url(x.image_path)}" alt="${esc(p.title)}" loading="lazy">`).join('')}</div></section>`})().catch(()=>document.querySelector('#content').innerHTML='<div class="empty">Não foi possível carregar este projeto.</div>');
+</script></body></html>
