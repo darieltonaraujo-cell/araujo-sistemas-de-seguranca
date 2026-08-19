@@ -11,33 +11,19 @@
 <body>
 <header><div class="nav"><a href="index.html"><img src="logo.png" alt="Araújo Sistemas de Segurança"></a><nav><a href="index.html">Início</a><a href="index.html#servicos">Serviços</a><a href="projetos.html">Projetos</a><a href="index.html#contato">Contato</a><a class="cta" href="https://wa.me/5511977066221?text=Olá!%20Gostaria%20de%20solicitar%20um%20orçamento." target="_blank">Orçamento</a></nav></div></header>
 <main class="projects-page">
-<section><small>PORTFÓLIO</small><h1>Projetos realizados</h1><p class="hero p">Veja alguns dos serviços e instalações realizados pela Araújo Sistemas de Segurança.</p></section>
+<section><small>PORTFÓLIO</small><h1>Projetos realizados</h1><p>Veja alguns dos serviços e instalações realizados pela Araújo Sistemas de Segurança.</p></section>
 <section id="public-projects"><div id="projectGrid" class="project-grid"></div></section>
-<section id="loginBox" class="project-login">
-<h2>Área administrativa</h2><p>Acesse para cadastrar fotos e descrições dos serviços.</p>
-<form id="loginForm"><div class="field"><label for="user">Usuário</label><input id="user" autocomplete="username" required></div><div class="field"><label for="pass">Senha</label><input id="pass" type="password" autocomplete="current-password" required></div><button class="button" type="submit">Entrar</button><div id="loginMsg" class="msg"></div></form>
-</section>
-<section id="admin" class="admin">
-<div class="admin-bar"><div><small>PAINEL ADMINISTRATIVO</small><h2>Adicionar projeto</h2></div><button id="logout" class="button" type="button">Sair</button></div>
-<form id="projectForm" class="project-form"><div class="field"><label for="title">Título do serviço</label><input id="title" required placeholder="Ex.: Instalação de CFTV residencial"></div><div class="field"><label for="description">Descrição</label><textarea id="description" required placeholder="Descreva o serviço realizado..."></textarea></div><div class="field"><label for="photo">Foto</label><input id="photo" type="file" accept="image/*" required></div><button class="button" type="submit">Adicionar projeto</button><div id="formMsg" class="msg"></div></form>
-</section>
-</main>
-<footer><img src="logo.png" alt="Logo"> © 2026 Araújo Sistemas de Segurança • São Paulo/SP</footer>
+<section id="loginBox" class="project-login"><h2>Área administrativa</h2><p>Acesse para cadastrar fotos e descrições dos serviços.</p><form id="loginForm"><div class="field"><label for="user">Usuário</label><input id="user" autocomplete="username" required></div><div class="field"><label for="pass">Senha</label><input id="pass" type="password" autocomplete="current-password" required></div><button class="button" type="submit">Entrar</button><div id="loginMsg" class="msg"></div></form></section>
+<section id="admin" class="admin"><div class="admin-bar"><div><small>PAINEL ADMINISTRATIVO</small><h2>Adicionar projeto</h2></div><button id="logout" class="button" type="button">Sair</button></div><form id="projectForm" class="project-form"><div class="field"><label for="title">Título do serviço</label><input id="title" required placeholder="Ex.: Instalação de CFTV residencial"></div><div class="field"><label for="description">Descrição</label><textarea id="description" required placeholder="Descreva o serviço realizado..."></textarea></div><div class="field"><label for="photo">Foto</label><input id="photo" type="file" accept="image/*" required></div><button class="button" type="submit">Adicionar projeto</button><div id="formMsg" class="msg"></div></form></section>
+</main><footer><img src="logo.png" alt="Logo"> © 2026 Araújo Sistemas de Segurança • São Paulo/SP</footer>
 <script>
-const KEY='araujo_projetos_v1';
-const AUTH='araujo_admin_session';
-// Credencial de demonstração para o painel local. Para produção, substituir por autenticação de servidor/Supabase.
-const USER='admin';
-const PASS_HASH='6b4b7a8e4d9d6d2d6e4f8d7f1c3e7f2b8a7e8d9c0f1a2b3c4d5e6f7081920a';
-const $=id=>document.getElementById(id);
-function projects(){try{return JSON.parse(localStorage.getItem(KEY)||'[]')}catch{return[]}}
-function save(p){localStorage.setItem(KEY,JSON.stringify(p))}
+const KEY='araujo_projetos_v1',AUTH='araujo_admin_session',USER='admin',PASS_HASH='4b152a9bb79f32fe42f97e003e91a2b2a7f36f493d48da37de9c2a005febdd32';
+const $=id=>document.getElementById(id);function projects(){try{return JSON.parse(localStorage.getItem(KEY)||'[]')}catch{return[]}}function save(p){localStorage.setItem(KEY,JSON.stringify(p))}function escapeHtml(s){return String(s).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]))}
 function render(){const grid=$('projectGrid'),items=projects();grid.innerHTML=items.length?items.map((p,i)=>`<article class="project-card"><img src="${p.photo}" alt="${escapeHtml(p.title)}"><div class="content"><h3>${escapeHtml(p.title)}</h3><p>${escapeHtml(p.description)}</p>${$('admin').style.display==='block'?`<button class="delete" data-i="${i}">Excluir</button>`:''}</div></article>`).join(''):'<div class="empty">Nenhum projeto cadastrado ainda.</div>';grid.querySelectorAll('.delete').forEach(b=>b.onclick=()=>{const p=projects();p.splice(+b.dataset.i,1);save(p);render()})}
-function escapeHtml(s){return String(s).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]))}
 function showAdmin(on){$('loginBox').style.display=on?'none':'block';$('admin').style.display=on?'block':'none';render()}
-$('loginForm').onsubmit=async e=>{e.preventDefault();const u=$('user').value.trim(),p=$('pass').value;if(u===USER&&p==='Araújo2026!'){sessionStorage.setItem(AUTH,'1');showAdmin(true)}else $('loginMsg').textContent='Usuário ou senha inválidos.'};
+async function sha256(text){const bytes=new TextEncoder().encode(text),hash=await crypto.subtle.digest('SHA-256',bytes);return Array.from(new Uint8Array(hash)).map(b=>b.toString(16).padStart(2,'0')).join('')}
+$('loginForm').onsubmit=async e=>{e.preventDefault();const u=$('user').value.trim(),p=$('pass').value,hash=await sha256(p);if(u===USER&&hash===PASS_HASH){sessionStorage.setItem(AUTH,'1');showAdmin(true)}else $('loginMsg').textContent='Usuário ou senha inválidos.'};
 $('logout').onclick=()=>{sessionStorage.removeItem(AUTH);showAdmin(false)};
 $('projectForm').onsubmit=e=>{e.preventDefault();const file=$('photo').files[0];if(!file)return;const reader=new FileReader();reader.onload=()=>{const p=projects();p.unshift({title:$('title').value.trim(),description:$('description').value.trim(),photo:reader.result});try{save(p);$('projectForm').reset();$('formMsg').textContent='Projeto adicionado com sucesso.';render()}catch{$('formMsg').textContent='Não foi possível salvar. A imagem pode ser grande demais para o armazenamento do navegador.'}};reader.readAsDataURL(file)};
 showAdmin(sessionStorage.getItem(AUTH)==='1');
-</script>
-</body></html>
+</script></body></html>
